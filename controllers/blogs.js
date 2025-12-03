@@ -3,8 +3,7 @@ const blog = require("../models/blog");
 const Blog = require("../models/blog");
 
 blogRouter.get("/info", (request, response) => {
-  response.send("<h1>Blog info page</h1>"); 
-
+  response.send("<h1>Blog info page</h1>");
 });
 
 blogRouter.get("/", (request, response) => {
@@ -16,7 +15,7 @@ blogRouter.get("/", (request, response) => {
 blogRouter.get("/:id", (request, response, next) => {
   Blog.findById(request.params.id)
     .then((blog) => {
-      if (blog) {
+      if(blog) {
         response.json(blog); //devuelve el blog si lo encuentra, reponse.json lo convierte a formato json
       } else {
         response.status(404).end();
