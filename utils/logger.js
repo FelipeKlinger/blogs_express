@@ -1,9 +1,14 @@
 const info = (...rest) => {
-  console.log(...rest);
+  if (!process.env.NODE_ENV === "test") {
+    console.log(...rest);
+  }
 };
 
 const error = (...rest) => {
-  console.error(...rest);
+if(!process.env.NODE_ENV === "test") {
+  console.error(...rest)
+}
+
 };
 
 module.exports = {

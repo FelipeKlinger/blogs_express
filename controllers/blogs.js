@@ -6,25 +6,17 @@ blogRouter.get("/info", (request, response) => {
   response.send("<h1>Blog info page</h1>");
 });
 
-blogRouter.get("/", (request, response) => {
-  Blog.find({}).then((blogs) => {
-    response.json(blogs);
-  });
+blogRouter.get("/", async (request, response) => {
+  const blogs = await Blog.find({});
+  response.json(blogs);
 });
 
-blogRouter.get("/:id", (request, response, next) => {
-  Blog.findById(request.params.id)
-    .then((blog) => {
-      if(blog) {
-        response.json(blog); //devuelve el blog si lo encuentra, reponse.json lo convierte a formato json
-      } else {
-        response.status(404).end();
-      }
-    })
-    .catch((error) => next(error));
+blogRouter.get("/:id", async (request, response) => {
+  const blog = await Blog.findById(request.params.id);
+  blog ? response.json(blog) : response.status(404).end();
 });
 
-blogRouter.post("/", (request, response, next) => {
+blogRouter.post("/", async (request, response) => {
   const body = request.body;
 
   const blog = new Blog({
@@ -34,12 +26,8 @@ blogRouter.post("/", (request, response, next) => {
     likes: body.likes,
   });
 
-  blog
-    .save()
-    .then((entradaNueva) => {
-      response.json(entradaNueva);
-    })
-    .catch((error) => next(error));
+  const entradaNueva = await blog.save(); // Guardar la petición en la base de datos
+  response.status(201).json(entradaNueva); // Responder con el blog guardado
 });
 
 module.exports = blogRouter;
