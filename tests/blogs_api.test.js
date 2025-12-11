@@ -5,6 +5,8 @@ const Blog = require("../models/blog");
 const supertest = require("supertest");
 const helper = require("../tests/test_helper");
 const app = require("../app");
+const { title } = require("node:process");
+
 const api = supertest(app);
 
 beforeEach(async () => {
@@ -54,4 +56,27 @@ test("Nuevo Blog añadido", async () => {
 });
 after(async () => {
   mongoose.connection.close();
+});
+
+test("Blog eliminado correctamente", async () => {
+  const blogsIniciales = await helper.notesInDb();
+  const blogEliminar = blogsIniciales[1];
+  await api.delete(`/api/blogs/${blogEliminar.id}`).expect(204);
+  const blogsFinales = await helper.notesInDb();
+  assert.strictEqual(blogsFinales.length, helper.blogs.length - 1);
+});
+
+test("Blog actualizado correctamente", async () => {
+  const blogsIniciales = await helper.notesInDb();
+  const blogActualizar = blogsIniciales[1];
+
+  const blogObject = {
+    title: "Blog actualizado 2",
+    author: "Single Letshe",
+    url: "Wolfiezzz",
+    likes: 9,
+  };
+  await api.put(`/api/blogs/${blogActualizar.id}`).send(blogObject).expect(200);
+  const blogsFinales = await helper.notesInDb();
+  assert.strictEqual(blogObject.title, blogsFinales[1].title);
 });
